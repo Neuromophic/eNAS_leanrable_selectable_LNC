@@ -8,7 +8,10 @@ import config
 import math
 import os
 
-def train_nn(nn, train_loader, valid_loader, lossfunction, optimizer, UUID='default'):
+def train_nn(nn, train_loader, valid_loader, lossfunction, optimizer, device='cpu', UUID='default'):
+    print('Training on device', device)
+    nn = nn.to(device)
+    lossfunction = lossfunction.to(device)
     
     training_ID = int(calendar.timegm(time.gmtime()))
     if not UUID == 'default':
@@ -22,6 +25,7 @@ def train_nn(nn, train_loader, valid_loader, lossfunction, optimizer, UUID='defa
 
     for epoch in range(10**10):
         for x_train, y_train in train_loader:
+            x_train, y_train = x_train.to(device), y_train.to(device)
             prediction_train = nn(x_train)
             L_train = lossfunction(prediction_train, y_train)
             train_loss.append(L_train.item())
@@ -32,6 +36,7 @@ def train_nn(nn, train_loader, valid_loader, lossfunction, optimizer, UUID='defa
             
         with torch.no_grad():
             for x_valid, y_valid in valid_loader:
+                x_valid, y_valid = x_valid.to(device), y_valid.to(device)
                 prediction_valid = nn(x_valid)
                 L_valid = lossfunction(prediction_valid, y_valid)
                 valid_loss.append(L_valid.item())

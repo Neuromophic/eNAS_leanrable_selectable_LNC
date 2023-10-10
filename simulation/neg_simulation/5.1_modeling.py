@@ -26,6 +26,7 @@ import training
 import config
 import matplotlib.pyplot as plt
 
+device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
 
 seed = int(sys.argv[1])
 for num_layer in range(5,21):
@@ -50,10 +51,10 @@ for num_layer in range(5,21):
             X_valid, Y_valid = a['X_valid'], a['Y_valid']
             X_test , Y_test  = a['X_test'] , a['Y_test']
 
-            Xn_learn, Yn_learn = a['Xn_learn'], a['Yn_learn']
-            Xn_train, Yn_train = a['Xn_train'], a['Yn_train']
-            Xn_valid, Yn_valid = a['Xn_valid'], a['Yn_valid']
-            Xn_test , Yn_test  = a['Xn_test'] , a['Yn_test']
+            Xn_learn, Yn_learn = a['Xn_learn'].to(device), a['Yn_learn'].to(device)
+            Xn_train, Yn_train = a['Xn_train'].to(device), a['Yn_train'].to(device)
+            Xn_valid, Yn_valid = a['Xn_valid'].to(device), a['Yn_valid'].to(device)
+            Xn_test , Yn_test  = a['Xn_test'].to(device) , a['Yn_test'].to(device)
 
 
             train_data = TensorDataset(Xn_train, Yn_train)
@@ -70,7 +71,7 @@ for num_layer in range(5,21):
             topology = [X.shape[1]] + [15 for _ in range(num_layer-1)] + [Y.shape[1]]
 
             config.SetSeed(seed)
-            model = torch.nn.Sequential()
+            model = torch.nn.Sequential().to(device)
             for t in range(len(topology)-1):
                 model.add_module(f'{t}-MAC', torch.nn.Linear(topology[t], topology[t+1]))
                 model.add_module(f'{t}-ACT', torch.nn.PReLU())
@@ -78,7 +79,7 @@ for num_layer in range(5,21):
             lossfunction = torch.nn.MSELoss()
             optimizer = torch.optim.Adam(model.parameters(), lr=10**lr)
 
-            model, train_loss, valid_loss = training.train_nn(model, train_loader, valid_loader, lossfunction, optimizer, UUID=exp_setup)
+            model, train_loss, valid_loss = training.train_nn(model, train_loader, valid_loader, lossfunction, optimizer, device, UUID=exp_setup)
             torch.save(model, f'./NNs/N_{exp_setup}.model')
 
             plt.figure()
