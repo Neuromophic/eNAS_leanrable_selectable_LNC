@@ -48,7 +48,7 @@ def train_nn(nn, train_loader, valid_loader, lossfunction, optimizer, device='cp
         else:
             patience += 1
 
-        if patience > 10000:
+        if patience > 5000:
             print('Early stop.')
             break
 
