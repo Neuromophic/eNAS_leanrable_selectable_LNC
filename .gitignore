@@ -11,3 +11,5 @@ result_data*
 *.model
 *.csv
 *.pdf
+*.data
+*.ds
