@@ -206,10 +206,9 @@ class TanhRT(torch.nn.Module):
         RTn = torch.zeros([9]).to(self.args.DEVICE)
         RTn[:6] = rt_temp
         RT = RTn * (self.X_max - self.X_min) + self.X_min
-        RT[6] = RT[1] / RT[0]  # k1 = R2 / R1
-        RT[7] = RT[3] / RT[2]  # k2 = L1 / W1
-        RT[8] = RT[5] / RT[4]  # k3 = L2 / W2
-        return (self.RT_extend - self.X_min) / (self.X_max - self.X_min)
+        # with ratio
+        RT_extend = torch.stack([RT[0], RT[1], RT[2], RT[3], RT[4], RT[5], RT[1]/RT[0], RT[3]/RT[2], RT[5]/RT[4]])
+        return (RT_extend - self.X_min) / (self.X_max - self.X_min)
 
     @property
     def eta(self):

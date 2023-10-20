@@ -63,7 +63,7 @@ parser.add_argument('--hidden',                type=list,      default=[4,3],   
 parser.add_argument('--skipconnection',        type=str2bool,  default=False,                 help='whether there are skip connections in the network')
 # training-related
 parser.add_argument('--SEED',                  type=int,       default=0,                     help='random seed')
-parser.add_argument('--DEVICE',                type=str,       default='gpu',                 help='device for training')
+parser.add_argument('--DEVICE',                type=str,       default='cpu',                 help='device for training')
 parser.add_argument('--PATIENCE',              type=int,       default=500,                   help='patience for early-stopping')
 parser.add_argument('--EPOCH',                 type=int,       default=10**10,                help='maximal epochs')
 parser.add_argument('--LR',                    type=float,     default=0.1,                   help='learning rate')
