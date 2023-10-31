@@ -338,8 +338,6 @@ class pNNLoss(torch.nn.Module):
     def __init__(self, args):
         super().__init__()
         self.args = args
-        self.area_baseline = torch.tensor(
-            [542., 518., 643., 892., 625., 619., 533., 548., 885., 609., 614., 544., 577.]).to(args.DEVICE)
 
     def standard(self, prediction, label):
         label = label.reshape(-1, 1)
@@ -351,18 +349,21 @@ class pNNLoss(torch.nn.Module):
                       ) + torch.max(self.args.m + fnym, torch.tensor(0))
         L = torch.mean(l)
         return L
+    
+    def CELoss(self, prediction, label):
+        fn = torch.nn.CrossEntropyLoss()
+        return fn(prediction, label)
 
-    def PowerEstimator(self, nn, x):
-        _ = nn(x)
-        return nn.Power
+    def forward(self, y, label):
+        N = y.shape[0]
+        loss = torch.tensor(0.).to(self.args.DEVICE)
+        if self.args.metric == 'acc':
+            for n in range(N):
+                loss += self.CELoss(y[n,:,:], label)
+        elif self.args.metric == 'maa':
+            for n in range(N):
+                loss += self.standard(y[n,:,:], label)
+        
+        return loss / N
 
-    def AreaEstimator(self, nn):
-        return nn.Area
 
-    def forward(self, nn, x, label):
-        if self.args.powerestimator == 'power':
-            return (1. - self.args.powerbalance) * self.standard(nn(x), label) + self.args.powerbalance * self.PowerEstimator(nn, x)
-        elif self.args.areaestimator == 'area':
-            return (1. - self.args.areabalance) * self.standard(nn(x), label) + self.args.areabalance * self.AreaEstimator(nn) / self.area_baseline[self.args.DATASET]
-        else:
-            return self.standard(nn(x), label)

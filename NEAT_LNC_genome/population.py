@@ -11,7 +11,7 @@ class Population(object):
         self.args = args
 
         if initial_state is None:
-            self.population = self.reproduction.create_new(config.genome_type, config.genome_config, config.pop_size)
+            self.population = self.reproduction.create_new(config.genome_type, config.genome_config, config.pop_size, args)
             self.species = config.species_set_type(config.species_set_config)
             self.generation = 0
             self.species.speciate(config, self.population, self.generation)
@@ -21,7 +21,7 @@ class Population(object):
         self.best_train_genome = None
         self.best_val_genome = None
 
-    def run(self, fitness_function, train_loader, valid_loader):
+    def run(self, fitness_function, args, train_loader, valid_loader):
         now = time.time()
         patience = 0
         for generation in range(self.generation, self.config.GENERATION):
@@ -53,16 +53,18 @@ class Population(object):
                 print('\nEarly-stopping based on validation loss.')
                 break
 
-            self.population = self.reproduction.reproduce(self.config, self.population, self.species, self.config.pop_size, generation)
+            self.population = self.reproduction.reproduce(self.config, self.population, self.species, self.config.pop_size, generation, args)
 
             msg += f'\nPatience for early-stopping: {patience}\nEpoch time: {time.time() - now:.3f}\n'
             now = time.time()
-            self.msglogger.info(msg)
-            print(msg)
+            
+            if not generation % args.report_freq:
+                self.msglogger.info(msg)
+                print(msg)
 
             if not self.species.species:
                 print('All species extinct. Create new population.')
-                self.population = self.reproduction.create_new(self.config.genome_type, self.config.genome_config, self.config.pop_size)
+                self.population = self.reproduction.create_new(self.config.genome_type, self.config.genome_config, self.config.pop_size, args)
 
             self.species.speciate(self.config, self.population, generation)
 

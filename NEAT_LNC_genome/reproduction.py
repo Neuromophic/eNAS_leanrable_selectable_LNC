@@ -21,12 +21,12 @@ class DefaultReproduction(DefaultClassConfig):
         self.stagnation = stagnation
         self.ancestors = {}
 
-    def create_new(self, genome_type, genome_config, num_genomes):
+    def create_new(self, genome_type, genome_config, num_genomes, args):
         new_genomes = {}
         for _ in range(num_genomes):
             key = next(self.genome_indexer)
             g = genome_type(key)
-            g.configure_new(genome_config)
+            g.configure_new(genome_config, args)
             new_genomes[key] = g
             self.ancestors[key] = tuple()
         return new_genomes
@@ -57,7 +57,7 @@ class DefaultReproduction(DefaultClassConfig):
 
         return spawn_amounts
 
-    def reproduce(self, config, old_population, species, pop_size, generation):
+    def reproduce(self, config, old_population, species, pop_size, generation, args):
         all_fitnesses = []
         remaining_species = []
         msg_stag = ''
@@ -72,7 +72,7 @@ class DefaultReproduction(DefaultClassConfig):
         if not remaining_species:
             species.species = {}
             return {}
-
+        # print(all_fitnesses)
         min_fitness = min(all_fitnesses)
         max_fitness = max(all_fitnesses)
         for afs in remaining_species:
@@ -82,10 +82,12 @@ class DefaultReproduction(DefaultClassConfig):
             afs.adjusted_fitness = af
 
         adjusted_fitnesses = [s.adjusted_fitness for s in remaining_species]
-
-        msg = generation_report(old_population, species, generation) + msg_stag
-        self.msglogger.info(msg)
-        print(msg, end='')
+        
+        
+        if not generation % args.report_freq:
+            msg = generation_report(old_population, species, generation) + msg_stag
+            self.msglogger.info(msg)
+            print(msg, end='')
 
         # number of new members for each species in the new generation
         previous_sizes = [len(s.members) for s in remaining_species]
@@ -119,8 +121,9 @@ class DefaultReproduction(DefaultClassConfig):
 
                 gid = next(self.genome_indexer)
                 child = config.genome_type(gid)
+
                 child.crossover(parent1, parent2)
-                child.mutate(config.genome_config)
+                child.mutate(config.genome_config, args)
 
                 new_population[gid] = child
                 self.ancestors[gid] = (parent1_id, parent2_id)

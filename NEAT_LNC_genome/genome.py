@@ -3,7 +3,7 @@ import copy
 from itertools import count
 from random import choice, random, shuffle
 from config import ConfigParameter
-from genes import PNCNodeGene, PNCConnectionGene
+from genes import PNCNodeGene, PNCConnectionGene, PNCActivationGene
 from feed_forward import creates_cycle
 from feed_forward import required_for_output
 
@@ -23,6 +23,8 @@ class GenomeConfig(object):
 
         self.node_gene_type = params['node_gene_type']
         self._params += self.node_gene_type.get_config_params()
+        self.activation_gene_type = params['activation_gene_type']
+        self._params += self.activation_gene_type.get_config_params()
         self.connection_gene_type = params['connection_gene_type']
         self._params += self.connection_gene_type.get_config_params()
 
@@ -46,6 +48,7 @@ class PNCGenome(object):
     @classmethod
     def parse_config(cls, param_dict):
         param_dict['node_gene_type'] = PNCNodeGene
+        param_dict['activation_gene_type'] = PNCActivationGene
         param_dict['connection_gene_type'] = PNCConnectionGene
         return GenomeConfig(param_dict)
 
@@ -55,9 +58,11 @@ class PNCGenome(object):
         self.nodes = {}
         self.fitness = None
 
-    def configure_new(self, config):
+    def configure_new(self, config, args):
+        self.activation_node = config.activation_gene_type()
+        self.activation_node.init_attributes(config, args)
         for node_key in config.output_keys:
-            self.nodes[node_key] = self.create_node(config, node_key)
+            self.nodes[node_key] = self.create_node(config, args, node_key)
 
     def crossover(self, genome1, genome2):
         if genome1.fitness > genome2.fitness:
@@ -65,12 +70,15 @@ class PNCGenome(object):
         else:
             parent1, parent2 = genome2, genome1
 
+        cross_prob = parent1.fitness / (parent1.fitness + parent2.fitness)
+
         for key, cg1 in parent1.connections.items():
             cg2 = parent2.connections.get(key)
             if cg2 is None:
                 self.connections[key] = cg1.copy()
             else:
-                self.connections[key] = cg1.crossover(cg2)
+                
+                self.connections[key] = cg1.crossover(cg2, cross_prob)
 
         parent1_set = parent1.nodes
         parent2_set = parent2.nodes
@@ -79,15 +87,17 @@ class PNCGenome(object):
             if ng2 is None:
                 self.nodes[key] = ng1.copy()
             else:
-                self.nodes[key] = ng1.crossover(ng2)
+                self.nodes[key] = ng1.crossover(ng2, cross_prob)
+        
+        self.activation_node = parent1.activation_node.crossover(parent2.activation_node, cross_prob)
 
-    def mutate(self, config):
+    def mutate(self, config, args):
         if random() < config.node_add_prob:
-            self.mutate_add_node(config)
+            self.mutate_add_node(config, args)
         if random() < config.node_delete_prob:
             self.mutate_delete_node(config)
         if random() < config.conn_add_prob:
-            self.mutate_add_connection(config)
+            self.mutate_add_connection(config, args)
         if random() < config.conn_delete_prob:
             self.mutate_delete_connection()
 
@@ -95,30 +105,31 @@ class PNCGenome(object):
             cg.mutate(config)
         for ng in self.nodes.values():
             ng.mutate(config)
+        self.activation_node.mutate(config)
 
-    def mutate_add_node(self, config):
+    def mutate_add_node(self, config, args):
         if not self.connections:
             return
 
         conn_to_split = choice(list(self.connections.values()))
         new_node_id = config.get_new_node_key(self.nodes)
-        ng = self.create_node(config, new_node_id)
+        ng = self.create_node(config, args, new_node_id)
         self.nodes[new_node_id] = ng
 
         conn_to_split.enabled = False
         i, o = conn_to_split.key
-        self.add_connection(config, i, new_node_id)
-        self.add_connection(config, new_node_id, o, conn_to_split.theta)
+        self.add_connection(config, args, i, new_node_id, conn_to_split.theta)
+        self.add_connection(config, args, new_node_id, o, config.gmax)
 
-    def add_connection(self, config, input_key, output_key, theta=None):
+    def add_connection(self, config, args, input_key, output_key, theta=None):
         key = (input_key, output_key)
         connection = config.connection_gene_type(key)
-        connection.init_attributes(config)
+        connection.init_attributes(config, args)
         if theta is not None:
             connection.theta = theta
         self.connections[key] = connection
 
-    def mutate_add_connection(self, config):
+    def mutate_add_connection(self, config, args):
         possible_outputs = list(self.nodes)
         out_node = choice(possible_outputs)
 
@@ -132,7 +143,7 @@ class PNCGenome(object):
         if creates_cycle(list(self.connections), key):
             return
 
-        cg = self.create_connection(config, in_node, out_node)
+        cg = self.create_connection(config, args, in_node, out_node)
         self.connections[cg.key] = cg
 
     def mutate_delete_node(self, config):
@@ -189,7 +200,9 @@ class PNCGenome(object):
             max_conn = max(len(self.connections), len(other.connections))
             connection_distance = (connection_distance + (config.node_coefficient * disjoint_connections)) / max_conn
 
-        distance = node_distance + connection_distance
+        activation_distance = self.activation_node.distance(other.activation_node, config)
+
+        distance = node_distance + connection_distance + activation_distance
         return distance
 
     def size(self):
@@ -197,15 +210,15 @@ class PNCGenome(object):
         return len(self.nodes), num_enabled_connections
 
     @staticmethod
-    def create_node(config, node_id):
+    def create_node(config, args, node_id):
         node = config.node_gene_type(node_id)
-        node.init_attributes(config)
+        node.init_attributes(config, args)
         return node
 
     @staticmethod
-    def create_connection(config, input_id, output_id):
+    def create_connection(config, args, input_id, output_id):
         connection = config.connection_gene_type((input_id, output_id))
-        connection.init_attributes(config)
+        connection.init_attributes(config, args)
         return connection
 
     def get_pruned_copy(self, genome_config):
@@ -216,6 +229,7 @@ class PNCGenome(object):
         new_genome = PNCGenome(None)
         new_genome.nodes = used_node_genes
         new_genome.connections = used_connection_genes
+        new_genome.activation_node = copy.deepcopy(self.activation_node)
         return new_genome
 
 

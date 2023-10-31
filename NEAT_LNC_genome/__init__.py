@@ -10,4 +10,4 @@ from genome import PNCGenome
 from population import Population
 from config import Config
 from feed_forward import *
-from utility import eval_genomes
+from utility import *
