@@ -31,4 +31,12 @@ class Evaluator(torch.nn.Module):
             self.performance = self.maa
         elif self.args.metric == 'acc_snn':
             self.performance = self.norminal_snn
-        return {'acc':self.performance(nn(x), label), 'power':nn.Power, 'area':nn.Area}
+        
+        prediction = nn(x)
+        N = prediction.shape[0]
+        acc = []
+        for n in range(N):
+            acc.append(self.performance(prediction[n,:,:], label))
+        accuracy = np.mean(acc)
+        std = np.std(acc)
+        return {'acc':accuracy, 'std':std, 'power':nn.Power, 'area':nn.Area}

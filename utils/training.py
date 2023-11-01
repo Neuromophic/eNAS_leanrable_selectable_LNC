@@ -35,9 +35,9 @@ def train_pnn_progressive(nn, train_loader, valid_loader, lossfunction, optimize
             msg += f'{current_lr}'
             msg += f'hyperparameters in printed neural network for training :\nepoch : {epoch:-6d} |\n'
             
-            L_train = lossfunction(nn, x_train, y_train)
+            L_train = lossfunction(nn(x_train), y_train)
             train_result = evaluator(nn, x_train, y_train)
-            train_acc, train_power, train_area = train_result['acc'], train_result['power'], train_result['area']
+            train_acc, train_std, train_power, train_area = train_result['acc'], train_result['std'], train_result['power'], train_result['area']
             optimizer.zero_grad()
             L_train.backward()
             optimizer.step()
@@ -46,9 +46,9 @@ def train_pnn_progressive(nn, train_loader, valid_loader, lossfunction, optimize
             for x_valid, y_valid in valid_loader:
                 msg += f'hyperparameters in printed neural network for validation :\nepoch : {epoch:-6d} |\n'
                 
-                L_valid = lossfunction(nn, x_valid, y_valid)
+                L_valid = lossfunction(nn(x_valid), y_valid)
                 valid_result = evaluator(nn, x_valid, y_valid)
-                valid_acc, valid_power, valid_area = valid_result['acc'], valid_result['power'], valid_result['area']
+                valid_acc, valid_std, valid_power, valid_area = valid_result['acc'], valid_result['std'], valid_result['power'], valid_result['area']
         
         logger.debug(msg)
         
@@ -91,8 +91,8 @@ def train_pnn_progressive(nn, train_loader, valid_loader, lossfunction, optimize
             logger.warning('Time limination reached.')
             break
         
-        print(f'| Epoch: {epoch:-6d} | Train loss: {L_train.item():.4e} | Valid loss: {L_valid.item():.4e} | Train acc: {train_acc:.4f} | Valid acc: {valid_acc:.4f} | patience: {patience_lr:-3d} | lr: {current_lr} | Epoch time: {end_epoch_time-start_epoch_time:.1f} | Area: {train_area.item():.2e} |')
-        logger.info(f'| Epoch: {epoch:-6d} | Train loss: {L_train.item():.4e} | Valid loss: {L_valid.item():.4e} | Train acc: {train_acc:.4f} | Valid acc: {valid_acc:.4f} | patience: {patience_lr:-3d} | lr: {current_lr} | Epoch time: {end_epoch_time-start_epoch_time:.1f} | Area: {train_area.item():.2e} |')
+        print(f'| Epoch: {epoch:-6d} | Train loss: {L_train.item():.4e} | Valid loss: {L_valid.item():.4e} | Train acc: {train_acc:.4f} ± {train_std:.4f} | Valid acc: {valid_acc:.4f} ± {valid_std:.4f} | patience: {patience_lr:-3d} | lr: {current_lr} | Epoch time: {end_epoch_time-start_epoch_time:.1f} |')
+        logger.info(f'| Epoch: {epoch:-6d} | Train loss: {L_train.item():.4e} | Valid loss: {L_valid.item():.4e} | Train acc: {train_acc:.4f} ± {train_std:.4f} | Valid acc: {valid_acc:.4f} ± {valid_std:.4f} | patience: {patience_lr:-3d} | lr: {current_lr} | Epoch time: {end_epoch_time-start_epoch_time:.1f} |')
         
     _, resulted_nn, _,_ = load_checkpoint(UUID, args.temppath)
     
@@ -132,7 +132,7 @@ def train_pnn(nn, train_loader, valid_loader, lossfunction, optimizer, args, log
             
             L_train = lossfunction(nn, x_train, y_train)
             train_result = evaluator(nn, x_train, y_train)
-            train_acc, train_power, train_area = train_result['acc'], train_result['power'], train_result['area']
+            train_acc, train_std, train_power, train_area = train_result['acc'], train_result['std'], train_result['power'], train_result['area']
             optimizer.zero_grad()
             L_train.backward()
             optimizer.step()
@@ -143,7 +143,7 @@ def train_pnn(nn, train_loader, valid_loader, lossfunction, optimizer, args, log
                 
                 L_valid = lossfunction(nn, x_valid, y_valid)
                 valid_result = evaluator(nn, x_valid, y_valid)
-                valid_acc, valid_power, valid_area = valid_result['acc'], valid_result['power'], valid_result['area']
+                valid_acc, valid_std, valid_power, valid_area = valid_result['acc'], valid_result['std'], valid_result['power'], valid_result['area']
         
         logger.debug(msg)
         
@@ -170,8 +170,8 @@ def train_pnn(nn, train_loader, valid_loader, lossfunction, optimizer, args, log
             logger.warning('Time limination reached.')
             break
         
-        print(f'| Epoch: {epoch:-6d} | Train loss: {L_train.item():.4e} | Valid loss: {L_valid.item():.4e} | Train acc: {train_acc:.4f} | Valid acc: {valid_acc:.4f} | patience: {patience:-3d} | Epoch time: {end_epoch_time-start_epoch_time:.1f} | Area: {train_area.item():.2e} |')
-        logger.info(f'| Epoch: {epoch:-6d} | Train loss: {L_train.item():.4e} | Valid loss: {L_valid.item():.4e} | Train acc: {train_acc:.4f} | Valid acc: {valid_acc:.4f} | patience: {patience:-3d} | Epoch time: {end_epoch_time-start_epoch_time:.1f} | Area: {train_area.item():.2e} |')
+        print(f'| Epoch: {epoch:-6d} | Train loss: {L_train.item():.4e} | Valid loss: {L_valid.item():.4e} | Train acc: {train_acc:.4f} ± {train_std:.4f} | Valid acc: {valid_acc:.4f} ± {valid_std:.4f} | patience: {patience_lr:-3d} | lr: {current_lr} | Epoch time: {end_epoch_time-start_epoch_time:.1f} |')
+        logger.info(f'| Epoch: {epoch:-6d} | Train loss: {L_train.item():.4e} | Valid loss: {L_valid.item():.4e} | Train acc: {train_acc:.4f} ± {train_std:.4f} | Valid acc: {valid_acc:.4f} ± {valid_std:.4f} | patience: {patience_lr:-3d} | lr: {current_lr} | Epoch time: {end_epoch_time-start_epoch_time:.1f} |')
         
     _, resulted_nn, _,_ = load_checkpoint(UUID, args.temppath)
     
