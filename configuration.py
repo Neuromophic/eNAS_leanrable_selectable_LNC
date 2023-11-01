@@ -12,8 +12,8 @@ def str2bool(v):
 
         
         
-parser = argparse.ArgumentParser(prog = 'Printed Spiking Neural Networks',
-                                 description = 'Training for Printed Spiking Neural Networks')
+parser = argparse.ArgumentParser(prog = 'Printed Neural Networks',
+                                 description = 'Evolutionary Based Variation Aware Training for Printed Neural Networks')
 
 # printing-related hyperparameters for pNNs
 parser.add_argument('--gmin',                  type=float,     default=0.01,                  help='minimal printable conductance value')
@@ -95,7 +95,7 @@ parser.add_argument('--LR_MIN',                type=float,     default=1e-4,    
 parser.add_argument('--metric',                type=str,       default='acc',                 help='nominal accuracy or measuring-aware accuracy')
 parser.add_argument('--SoftEva',               type=str2bool,  default=True,                  help='if True, evaluate only existing models, otherwise check all models')
 # server-related
-parser.add_argument('--TIMELIMITATION',        type=float,     default=45,                    help='maximal running time (in hour)')
+parser.add_argument('--TIMELIMITATION',        type=float,     default=71,                    help='maximal running time (in hour)')
 
 # hardware-related hyperparameters
 # aging-related hyperparameters
@@ -107,24 +107,24 @@ parser.add_argument('--K_test',                type=int,       default=1,       
 parser.add_argument('--t_test_max',            type=int,       default=1,                     help='test time interval')
 parser.add_argument('--integration',           type=str,       default='MC',                  help='method for integration: Monte-Carlo, Gaussian Quadrature')
 # variation-related hyperparameters
-parser.add_argument('--N_train',               type=int,       default=11,                     help='number of sampling for variation during training')
-parser.add_argument('--e_train',               type=float,     default=0.1,                    help='variation during training')
-parser.add_argument('--N_test',                type=int,       default=3,                     help='number of sampling for variation for testing')
-parser.add_argument('--e_test',                type=int,       default=0.1,                    help='variation for testing')
+parser.add_argument('--N_train',               type=int,       default=20,                    help='number of sampling for variation during training')
+parser.add_argument('--e_train',               type=float,     default=0.1,                   help='variation during training')
+parser.add_argument('--N_test',                type=int,       default=20,                    help='number of sampling for variation for testing')
+parser.add_argument('--e_test',                type=int,       default=0.1,                   help='variation for testing')
 # power
 parser.add_argument('--powerestimator',        type=str,       default='none',                help='the penalty term for encouraging lower energy')
 parser.add_argument('--powerbalance',          type=float,     default=0.,                    help='the scaling term for energy vs. accuracy')
 parser.add_argument('--estimatorbalance',      type=float,     default=0.,                    help='the scaling term for energy & weight decay')
 parser.add_argument('--pgmin',                 type=float,     default=1e-7,                  help='minimal printable conductance gmin')
 # area
-parser.add_argument('--areaestimator',         type=str,       default='area',                help='the penalty term for encouraging lower area')
+parser.add_argument('--areaestimator',         type=str,       default='none',                help='the penalty term for encouraging lower area')
 parser.add_argument('--areabalance',           type=float,     default=0.,                    help='the scaling term for area vs. accuracy')
 parser.add_argument('--area_theta',            type=float,     default=0.15,                  help='area of a single printed resistor mm^2')
 parser.add_argument('--area_act',              type=float,     default=30.,                   help='area of a single printed act circuit mm^2')
 parser.add_argument('--area_neg',              type=float,     default=22.7,                  help='area of a single printed neg circuit mm^2')
 
 # circuit learnability
-parser.add_argument('--lnc',                   type=str2bool,  default=False,                 help='shared learnable nonlinear components')
+parser.add_argument('--lnc',                   type=str2bool,  default=True,                  help='learnable nonlinear components')
 
 # log-file-related information
 parser.add_argument('--projectname',           type=str,       default='project',             help='name of the project')

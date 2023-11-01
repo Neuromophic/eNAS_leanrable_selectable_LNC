@@ -3,7 +3,7 @@ import argparse
 EA_parser = argparse.ArgumentParser(description='NEAT Configurations')
 
 # NEAT configurations
-EA_parser.add_argument('--pop_size',                                type=int,       default=50,            help='Population size')
+EA_parser.add_argument('--pop_size',                                type=int,       default=500,            help='Population size')
 EA_parser.add_argument('--PATIENCE',                                type=int,       default=50,             help='Patience for early stopping')
 EA_parser.add_argument('--GENERATION',                              type=int,       default=10**10,         help='Maximal generation for evolution')
 EA_parser.add_argument('--species_elitism',                         type=int,       default=2,              help='minimal species in the whole population')
