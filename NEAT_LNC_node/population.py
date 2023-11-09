@@ -10,20 +10,25 @@ class Population(object):
         self.reproduction = config.reproduction_type(config.reproduction_config, self.msglogger, stagnation)
         self.args = args
 
-        if initial_state is None:
-            self.population = self.reproduction.create_new(config.genome_type, config.genome_config, config.pop_size, args)
-            self.species = config.species_set_type(config.species_set_config)
-            self.generation = 0
-            self.species.speciate(config, self.population, self.generation)
-        else:
-            self.population, self.species, self.generation = initial_state
-
         self.best_train_genome = None
         self.best_val_genome = None
 
-    def run(self, fitness_function, args, train_loader, valid_loader):
+    def run(self, fitness_function, args, train_loader, valid_loader, setup):
         now = time.time()
-        patience = 0
+
+        # initialization from previous training or create new
+        if load_checkpoint(setup, args.temppath):
+            self.generation, self.population, self.species, self.best_valid_genome = load_checkpoint(setup, args.temppath)
+            self.msglogger.info(f'Restart previous training from {self.generation} generation.')
+            print(f'Restart previous training from {self.generation} generation.')
+        else:
+            self.generation = 0
+            patience = 0
+            self.population = self.reproduction.create_new(self.config.genome_type, self.config.genome_config, self.config.pop_size, args)
+            self.species = self.config.species_set_type(self.config.species_set_config)
+            self.species.speciate(self.config, self.population, self.generation)
+
+    
         for generation in range(self.generation, self.config.GENERATION):
             val_population = copy.deepcopy(self.population)
 
@@ -41,6 +46,7 @@ class Population(object):
 
             if self.best_val_genome is None or best_valid_genome.fitness > self.best_val_genome.fitness:
                 self.best_val_genome = best_valid_genome
+                save_checkpoint(generation, self.population, self.species, best_valid_genome, setup, args.temppath)
                 patience = 0
             else:
                 patience += 1

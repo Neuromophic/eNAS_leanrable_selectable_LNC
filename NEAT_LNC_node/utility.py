@@ -1,4 +1,5 @@
 import numpy as np
+import random
 import torch
 import sys
 import os
@@ -82,3 +83,28 @@ def post_evaluate(population, best_genome, generation, config, stage):
     
     msg = f'\n| {generation:-3d} | {stage} | Mean Fit: {fit_mean:.2e} | Best Fit: {best_genome.fitness:.2e} | #Node {genome.size()[0]:2d} | #Edge {genome.size()[1]:2d} | Accuracy: {best_genome.accuracy:.3f} | Std: {best_genome.std:.3e} |'
     return msg
+
+
+def save_checkpoint(generation, population, species, best_valid_genome, setup, path):
+    filename = f'{path}/{setup}.ckp'
+    if not os.path.exists(path):
+        os.makedirs(path)
+
+    random_state = {'random': random.getstate(), 'numpy': np.random.get_state(), 'torch': torch.random.get_rng_state()}
+    checkpoint = {'generation': generation, 'population': population, 'species': species, 'best_valid_genome': best_valid_genome, 'random_state': random_state}
+    torch.save(checkpoint, filename)
+    return None
+
+def load_checkpoint(setup, path):
+    if os.path.isfile(f'{path}/{setup}.ckp'):
+        checkpoint = torch.load(f'{path}/{setup}.ckp')
+        random.setstate(checkpoint['random_state']['random'])
+        np.random.set_state(checkpoint['random_state']['numpy'])
+        torch.random.set_rng_state(checkpoint['random_state']['torch'])
+        generation = checkpoint['generation']
+        population = checkpoint['population']
+        species = checkpoint['species']
+        best_valid_genome = checkpoint['best_valid_genome']
+        return generation+1, population, species, best_valid_genome
+    else:
+        return None
