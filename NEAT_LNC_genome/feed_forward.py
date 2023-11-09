@@ -83,26 +83,26 @@ class PrintedNeuromorphicCircuit:
     def act(self, a):
         activation_fn = self.activation_node.Activation
         if activation_fn == 'ptanh':
-            act = pLNC.TanhRT(self.args)
+            act = self.activation_node.tanh
             act.N = self.N
             act.epsilon = self.epsilon
             act.rt_.data = torch.tensor([self.activation_node.ACT_R1n, self.activation_node.ACT_R2n,
                                          self.activation_node.ACT_W1n, self.activation_node.ACT_L1n,
                                          self.activation_node.ACT_W2n, self.activation_node.ACT_L2n])
         elif activation_fn == 'hardsigmoid':
-            act = pLNC.HardSigmoidRT(self.args)
+            act = self.activation_node.HS
             act.N = self.N
             act.epsilon = self.epsilon
             act.rt_.data = torch.tensor([self.activation_node.HS_Rn, self.activation_node.HS_Wn, self.activation_node.HS_Ln])
         elif activation_fn == 'prelu':
-            act = pLNC.pReLURT(self.args)
+            act = self.activation_node.ReLU
             act.N = self.N
             act.epsilon = self.epsilon
             act.rt_.data = torch.tensor([self.activation_node.ReLU_RHn, self.activation_node.ReLU_RLn,
                                          self.activation_node.ReLU_RDn, self.activation_node.ReLU_RBn,
                                          self.activation_node.ReLU_Wn, self.activation_node.ReLU_Ln])
         elif activation_fn == 'sigmoid':
-            act = pLNC.SigmoidRT(self.args)
+            act = self.activation_node.sigmoid
             act.N = self.N
             act.epsilon = self.epsilon
             act.rt_.data = torch.tensor([self.activation_node.S_R1n, self.activation_node.S_R2n,
@@ -114,7 +114,7 @@ class PrintedNeuromorphicCircuit:
         return act(a)
     
     def neg(self, x):
-        inv = pLNC.InvRT(self.args)
+        inv = self.activation_node.neg
         inv.N = self.N
         inv.epsilon = self.epsilon
         inv.rt_.data = torch.tensor([self.activation_node.NEG_R1n, self.activation_node.NEG_R2n, self.activation_node.NEG_R3n,

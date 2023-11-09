@@ -82,26 +82,26 @@ class PrintedNeuromorphicCircuit:
     def act(self, node_gene, a):
         activation_fn = node_gene.Activation
         if activation_fn == 'ptanh':
-            act = pLNC.TanhRT(self.args)
+            act = node_gene.tanh
             act.N = self.N
             act.epsilon = self.epsilon
             act.rt_.data = torch.tensor([node_gene.ACT_R1n, node_gene.ACT_R2n,
                                          node_gene.ACT_W1n, node_gene.ACT_L1n,
                                          node_gene.ACT_W2n, node_gene.ACT_L2n])
         elif activation_fn == 'hardsigmoid':
-            act = pLNC.HardSigmoidRT(self.args)
+            act = node_gene.HS
             act.N = self.N
             act.epsilon = self.epsilon
             act.rt_.data = torch.tensor([node_gene.HS_Rn, node_gene.HS_Wn, node_gene.HS_Ln])
         elif activation_fn == 'prelu':
-            act = pLNC.pReLURT(self.args)
+            act = node_gene.ReLU
             act.N = self.N
             act.epsilon = self.epsilon
             act.rt_.data = torch.tensor([node_gene.ReLU_RHn, node_gene.ReLU_RLn,
                                          node_gene.ReLU_RDn, node_gene.ReLU_RBn,
                                          node_gene.ReLU_Wn,  node_gene.ReLU_Ln])
         elif activation_fn == 'sigmoid':
-            act = pLNC.SigmoidRT(self.args)
+            act = node_gene.sigmoid
             act.N = self.N
             act.epsilon = self.epsilon
             act.rt_.data = torch.tensor([node_gene.S_R1n, node_gene.S_R2n,
@@ -113,7 +113,7 @@ class PrintedNeuromorphicCircuit:
         return act(a)
     
     def neg(self, node_gene, x):
-        inv = pLNC.InvRT(self.args)
+        inv = node_gene.neg
         inv.N = self.N
         inv.epsilon = self.epsilon
         inv.rt_.data = torch.tensor([node_gene.NEG_R1n, node_gene.NEG_R2n, node_gene.NEG_R3n,

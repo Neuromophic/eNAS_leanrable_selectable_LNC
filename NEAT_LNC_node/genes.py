@@ -1,6 +1,12 @@
 from random import random
 from attributes import FloatAttribute, BoolAttribute, StringAttribute
-
+import sys
+import os
+from pathlib import Path
+sys.path.append(os.getcwd())
+sys.path.append(str(Path(os.getcwd()).parent))
+sys.path.append(os.path.join(str(Path(os.getcwd()).parent), 'utils'))
+import pLNC
 
 class BaseGene(object):
     def __init__(self, key):
@@ -75,6 +81,41 @@ class PNCNodeGene(BaseGene):
 
     def __init__(self, key):
         BaseGene.__init__(self, key)
+
+    def init_attributes(self, config, args):
+        for a in self._gene_attributes:
+            setattr(self, a.name, a.init_value(config, args))
+
+        self.tanh = pLNC.TanhRT(args)
+        self.HS = pLNC.HardSigmoidRT(args)
+        self.ReLU = pLNC.pReLURT(args)
+        self.sigmoid = pLNC.SigmoidRT(args)
+        self.neg = pLNC.InvRT(args)
+
+    def copy(self):
+        new_gene = self.__class__(self.key)
+        for a in self._gene_attributes:
+            setattr(new_gene, a.name, getattr(self, a.name))
+        new_gene.tanh = self.tanh
+        new_gene.HS = self.HS
+        new_gene.ReLU = self.ReLU
+        new_gene.sigmoid = self.sigmoid
+        new_gene.neg = self.neg
+        return new_gene
+
+    def crossover(self, gene2, prob):
+        new_gene = self.__class__(self.key)
+        for a in self._gene_attributes:
+            if random() < prob:
+                setattr(new_gene, a.name, getattr(self, a.name))
+            else:
+                setattr(new_gene, a.name, getattr(gene2, a.name))
+        new_gene.tanh = self.tanh
+        new_gene.HS = self.HS
+        new_gene.ReLU = self.ReLU
+        new_gene.sigmoid = self.sigmoid
+        new_gene.neg = self.neg
+        return new_gene
 
     def nlc_distance(self, other, config):
         d_ptanh = abs(self.ACT_R1n - other.ACT_R1n) + abs(self.ACT_R2n - other.ACT_R2n) +\

@@ -13,6 +13,7 @@ def eval_genome(genome, config, loader, args):
     loss_fn = pNN.pNNLoss(args)
 
     genome_pruned = genome.get_pruned_copy(config.genome_config)
+    
     num_node, num_edge = genome_pruned.size()
     neg_connections = [cg.key for cg in genome_pruned.connections.values() if PrintedNeuromorphicCircuit.theta_ste(cg.theta, config) < 0]
 

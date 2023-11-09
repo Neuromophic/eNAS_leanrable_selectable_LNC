@@ -79,7 +79,7 @@ parser.add_argument('--N_time',                type=int,       default=32,      
 # regularization
 parser.add_argument('--pathnorm',              type=str2bool,  default=False,                 help='path-norm as regularization for improving robustness against input noise')
 # network-related
-parser.add_argument('--hidden',                type=list,      default=[4,3],                 help='topology of the hidden layers')
+parser.add_argument('--hidden',                type=list,      default=[3],                   help='topology of the hidden layers')
 parser.add_argument('--skipconnection',        type=str2bool,  default=False,                 help='whether there are skip connections in the network')
 # training-related
 parser.add_argument('--SEED',                  type=int,       default=0,                     help='random seed')
@@ -130,7 +130,7 @@ parser.add_argument('--lnc',                   type=str2bool,  default=True,    
 parser.add_argument('--projectname',           type=str,       default='project',             help='name of the project')
 parser.add_argument('--temppath',              type=str,       default='/temp',               help='path to temp files')
 parser.add_argument('--logfilepath',           type=str,       default='/log',                help='path to log files')
-parser.add_argument('--report_freq',           type=int,       default=10,                    help='write log in every N epochs')
+parser.add_argument('--report_freq',           type=int,       default=50,                    help='write log in every N epochs')
 parser.add_argument('--recording',             type=str2bool,  default=False,                 help='save information in each epoch')
 parser.add_argument('--recordpath',            type=str,       default='/record',             help='save information in each epoch')
 parser.add_argument('--savepath',              type=str,       default='/experiment',         help='save information in each epoch')

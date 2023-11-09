@@ -43,7 +43,7 @@ def eval_genome(genome, config, loader, args):
     accuracy = numpy.mean(acc)
     std = numpy.std(acc)
 
-    genome.fitness = (accuracy - loss / args.loss_reference)
+    genome.fitness = accuracy - loss
     genome.area = area
     genome.accuracy = accuracy
     genome.std = std
