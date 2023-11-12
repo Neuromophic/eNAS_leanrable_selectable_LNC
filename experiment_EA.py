@@ -47,7 +47,7 @@ else:
 
     config = neat.Config(neat.PNCGenome, neat.DefaultReproduction, neat.DefaultSpeciesSet, neat.DefaultStagnation, EA_args)
     p = neat.Population(config, msglogger, args)
-    winner = p.run(neat.eval_genomes, args, train_loader, valid_loader)
+    winner = p.run(neat.eval_genomes, args, train_loader, valid_loader, setup)
 
     winner_pruned = winner.get_pruned_copy(config.genome_config)
     torch.save(winner_pruned, f'{args.savepath}/{setup}.model')
