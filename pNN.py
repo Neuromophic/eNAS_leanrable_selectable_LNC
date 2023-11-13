@@ -68,8 +68,8 @@ class pLayer(torch.nn.Module):
     def forward(self, a_previous):
         z_new = self.MAC(a_previous)
         self.mac_power = self.MAC_power(a_previous, z_new)
-        a_new = self.ACT(a_new)
-        return z_new
+        a_new = self.ACT(z_new)
+        return a_new
 
     @property
     def g_tilde(self):
