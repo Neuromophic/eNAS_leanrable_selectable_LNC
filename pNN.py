@@ -13,6 +13,7 @@ class pLayer(torch.nn.Module):
         self.N = args.N_train
         self.epsilon = args.e_train
         # define nonlinear circuits
+        self.ACT = ACT
         self.INV = INV
         # initialize conductances for weights
         theta = torch.rand([n_in + 2, n_out])/100. + args.gmin
@@ -67,6 +68,7 @@ class pLayer(torch.nn.Module):
     def forward(self, a_previous):
         z_new = self.MAC(a_previous)
         self.mac_power = self.MAC_power(a_previous, z_new)
+        a_new = self.ACT(a_new)
         return z_new
 
     @property
