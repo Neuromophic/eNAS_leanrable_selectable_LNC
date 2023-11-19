@@ -55,6 +55,7 @@ class Population(object):
             msg += post_evaluate(val_population, best_valid_genome, generation, self.config, 'Valid')
 
             if patience >= self.config.PATIENCE:
+                os.remove(f'{args.temppath}/{setup}.ckp')
                 self.msglogger.info('\nEarly-stopping based on validation loss.')
                 print('\nEarly-stopping based on validation loss.')
                 break

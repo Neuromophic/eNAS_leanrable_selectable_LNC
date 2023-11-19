@@ -3,7 +3,7 @@ import os
 sys.path.append(os.getcwd())
 sys.path.append(os.path.join(os.getcwd(), 'NEAT_LNC_genome'))
 import torch
-import NEAT_LNC_node as neat
+import NEAT_LNC_genome as neat
 import pprint
 from utils import *
 from configuration import *
