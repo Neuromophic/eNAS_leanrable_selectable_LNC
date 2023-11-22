@@ -130,7 +130,7 @@ parser.add_argument('--lnc',                   type=str2bool,  default=True,    
 parser.add_argument('--projectname',           type=str,       default='project',             help='name of the project')
 parser.add_argument('--temppath',              type=str,       default='/temp',               help='path to temp files')
 parser.add_argument('--logfilepath',           type=str,       default='/log',                help='path to log files')
-parser.add_argument('--report_freq',           type=int,       default=50,                    help='write log in every N epochs')
+parser.add_argument('--report_freq',           type=int,       default=10,                    help='write log in every N epochs')
 parser.add_argument('--recording',             type=str2bool,  default=False,                 help='save information in each epoch')
 parser.add_argument('--recordpath',            type=str,       default='/record',             help='save information in each epoch')
 parser.add_argument('--savepath',              type=str,       default='/experiment',         help='save information in each epoch')
