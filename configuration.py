@@ -79,7 +79,7 @@ parser.add_argument('--N_time',                type=int,       default=32,      
 # regularization
 parser.add_argument('--pathnorm',              type=str2bool,  default=False,                 help='path-norm as regularization for improving robustness against input noise')
 # network-related
-parser.add_argument('--hidden',                type=list,      default=[3],                   help='topology of the hidden layers')
+parser.add_argument('--hidden',                type=list,      default=[5],                   help='topology of the hidden layers')
 parser.add_argument('--skipconnection',        type=str2bool,  default=False,                 help='whether there are skip connections in the network')
 # training-related
 parser.add_argument('--SEED',                  type=int,       default=0,                     help='random seed')

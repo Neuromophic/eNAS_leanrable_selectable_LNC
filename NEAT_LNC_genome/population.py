@@ -14,6 +14,7 @@ class Population(object):
         self.best_val_genome = None
 
     def run(self, fitness_function, args, train_loader, valid_loader, setup):
+        start_training_time = time.time()
         now = time.time()
         
         # initialization from previous training or create new
@@ -68,6 +69,12 @@ class Population(object):
             if not generation % args.report_freq:
                 self.msglogger.info(msg)
                 print(msg)
+
+            end_training_time = time.time()
+            if (end_training_time - start_training_time) >= args.TIMELIMITATION*60*60:
+                print('Time limination reached.')
+                self.msglogger('Time limination reached.')
+                break
 
             if not self.species.species:
                 print('All species extinct. Create new population.')

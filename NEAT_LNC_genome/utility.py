@@ -95,14 +95,18 @@ def save_checkpoint(generation, population, species, best_valid_genome, setup, p
 
 def load_checkpoint(setup, path):
     if os.path.isfile(f'{path}/{setup}.ckp'):
-        checkpoint = torch.load(f'{path}/{setup}.ckp')
-        random.setstate(checkpoint['random_state']['random'])
-        np.random.set_state(checkpoint['random_state']['numpy'])
-        torch.random.set_rng_state(checkpoint['random_state']['torch'])
-        generation = checkpoint['generation']
-        population = checkpoint['population']
-        species = checkpoint['species']
-        best_valid_genome = checkpoint['best_valid_genome']
-        return generation+1, population, species, best_valid_genome
+        try:
+            checkpoint = torch.load(f'{path}/{setup}.ckp')
+            random.setstate(checkpoint['random_state']['random'])
+            np.random.set_state(checkpoint['random_state']['numpy'])
+            torch.random.set_rng_state(checkpoint['random_state']['torch'])
+            generation = checkpoint['generation']
+            population = checkpoint['population']
+            species = checkpoint['species']
+            best_valid_genome = checkpoint['best_valid_genome']
+            return generation+1, population, species, best_valid_genome
+        except Exception as e:
+            print(f"Error loading file: {e}")
+            return None
     else:
         return None
