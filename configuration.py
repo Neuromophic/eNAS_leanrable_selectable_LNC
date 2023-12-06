@@ -27,10 +27,6 @@ parser.add_argument('--ACT_W1n',               type=float,     default=-10.4537,
 parser.add_argument('--ACT_L1n',               type=float,     default=10.5460,               help='length of the transistor 1')
 parser.add_argument('--ACT_W2n',               type=float,     default=-5.8496,               help='width of the transistor 2')
 parser.add_argument('--ACT_L2n',               type=float,     default=4.2337,                help='length of the transistor 2')
-parser.add_argument('--etaA1',                 type=float,     default=-0.006,                help='eta_1 for activation')  # can be deleted after finalizing the EA model
-parser.add_argument('--etaA2',                 type=float,     default=1.024,                 help='eta_2 for activation')  # can be deleted after finalizing the EA model
-parser.add_argument('--etaA3',                 type=float,     default=0.016,                 help='eta_3 for activation')  # can be deleted after finalizing the EA model
-parser.add_argument('--etaA4',                 type=float,     default=1.006,                 help='eta_4 for activation')  # can be deleted after finalizing the EA model
 # learnable sigmoid circuits 
 parser.add_argument('--S_R1n',                 type=float,     default=-11.7481,              help='resistance in nonlinear circuit')
 parser.add_argument('--S_R2n',                 type=float,     default=-0.3905,               help='resistance in nonlinear circuit')
@@ -59,10 +55,6 @@ parser.add_argument('--NEG_W2n',               type=float,     default=1.2674,  
 parser.add_argument('--NEG_L2n',               type=float,     default=-10.4803,              help='length of the transistor')
 parser.add_argument('--NEG_W3n',               type=float,     default=-6.4386,               help='width of the transistor')
 parser.add_argument('--NEG_L3n',               type=float,     default=5.1005,                help='length of the transistor')
-parser.add_argument('--etaN1',                 type=float,     default=0.1601,                help='eta_1 for negative weight')  # can be deleted after finalizing the EA model
-parser.add_argument('--etaN2',                 type=float,     default=0.6922,                help='eta_2 for negative weight')  # can be deleted after finalizing the EA model
-parser.add_argument('--etaN3',                 type=float,     default=-0.0650,               help='eta_3 for negative weight')  # can be deleted after finalizing the EA model
-parser.add_argument('--etaN4',                 type=float,     default=5.2968,                help='eta_4 for negative weight')  # can be deleted after finalizing the EA model
 
 # machine-learning-related hyperparameters
 # dataset-related

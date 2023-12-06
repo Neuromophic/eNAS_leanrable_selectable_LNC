@@ -65,7 +65,7 @@ class PNCGenome(object):
         else:
             parent1, parent2 = genome2, genome1
 
-        cross_prob = parent1.fitness / (parent1.fitness + parent2.fitness)
+        cross_prob = parent1.fitness / (parent1.fitness + parent2.fitness + 1e-5)
 
         for key, cg1 in parent1.connections.items():
             cg2 = parent2.connections.get(key)
