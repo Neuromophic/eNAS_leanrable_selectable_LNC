@@ -9,7 +9,6 @@ result_data*
 .vscode
 *.mlp
 *.model
-*.csv
 *.pdf
 *.data
 *.ds
